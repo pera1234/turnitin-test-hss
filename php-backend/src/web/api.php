@@ -12,11 +12,31 @@ $dbconn = pg_connect("host=db dbname=postgres user=postgres password=postgres");
 $resource = $pathInfo[1];
 switch ($resource) {
     case 'members':
-        $result = pg_query_params($dbconn, 'SELECT * FROM memberships', []);
+        $result = pg_query_params($dbconn,
+            'SELECT
+                        m.id AS membership_id,
+                        m.user_id,
+                        m.role,
+                        u.id AS user_id,
+                        u.name,
+                        u.email
+                    FROM memberships m
+                    INNER JOIN users u
+                    ON m.user_id = u.id', []);
         $memberships = [];
         while($membership = pg_fetch_assoc($result)) {
-            $memberships[] = $membership;
+            $memberships[] = [
+                'id' => $membership['membership_id'],
+                'user_id' => $membership['user_id'],
+                'role' => $membership['role'],
+                'user' => [
+                    'id' => $membership['user_id'],
+                    'name' => $membership['name'],
+                    'email' => $membership['email']
+                ]
+            ];
         }
+
         echo json_encode([
             'memberships' => $memberships
         ]);
