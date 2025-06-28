@@ -11,7 +11,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 # ARG BUILD
 
 
-COPY package.json tsconfig.json /app/
+COPY package.json tsconfig.json .env /app/
 
 RUN  npm install
 
